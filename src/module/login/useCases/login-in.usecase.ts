@@ -28,7 +28,23 @@ export class SingInUseCase {
         }
 
         //Se existir, validar a senha
-        await compare(data.password, user.password);
+        const IsEqualPassword = await compare(data.password, user.password);
 
+        //Se a senha for diferente, retornar erro
+        if(!IsEqualPassword) {
+            throw new UnauthorizedException();
+        }
+
+        const payload = {
+            sub: user.id,
+            username: user.username
+        }
+
+        const token = await this.jwtService.signAsync(payload);
+
+        //Se sim, gerar token
+        return {
+            acess_token: token
+        };
     }
 }
