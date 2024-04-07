@@ -9,7 +9,7 @@ export class UserPrismaRepository implements    IUserRepository {
 
     constructor(private prisma: PrismaService) {}
 
-    async findByUsernameOrEmail(data: UsernameAndEmail): Promise<UserCreatedDTO> {
+    async findByUsernameOrEmail(data: UsernameAndEmail): Promise<UserCreatedDTO | null> {
           return await this.prisma.users.findFirst({
             where : {
                 OR : [ {username: data.username} , {email: data.email} ]
@@ -18,16 +18,22 @@ export class UserPrismaRepository implements    IUserRepository {
 
     }
     async save(data: CreateUserDTO): Promise<UserCreatedDTO> {
-        return await this.prisma.users.create({
+        return await this.prisma.users.create({ 
             data,
         })
     }
 
-    async findByUsername(username: string) : Promise<UserCreatedDTO> {
+    async findByUsername(username: string) : Promise<UserCreatedDTO | null> {
         return await this.prisma.users.findUnique({
             where: {
                 username,
             }
         })
+    }
+
+    async findById(id: string) : Promise<UserCreatedDTO | null> {
+        return this.prisma.users.findUnique({
+            where: {id}
+        });
     }
 }
